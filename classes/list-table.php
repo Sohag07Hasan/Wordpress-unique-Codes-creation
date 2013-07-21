@@ -26,8 +26,8 @@ class SeamlessDonationCodeLists extends WP_List_Table{
 		$columns = array(
 			'cb' => '<input type="checkbox" />',
 			'code' => __('Code'),
-			'min' => __('Minimum Range'),
-			'max' => __('Maxium Range'),		
+			'min_value' => __('Minimum'),
+			'max_value' => __('Maxium'),		
 			'status' => __('Status'),
 			'time' => __('Creation Time'),
 		);
@@ -57,9 +57,9 @@ class SeamlessDonationCodeLists extends WP_List_Table{
 	function get_sortable_columns(){
 		$sortable_columns = array(
 			'time' => array('time', false),
-			'status' => array('status', false),
-			'min' => array('min', false),
-			'max' => array('max', false)		
+			//'status' => array('status', false),
+			'min_value' => array('min_value', false),
+			'max_value' => array('max_value', false)		
 		);
 	
 		return $sortable_columns;
@@ -73,8 +73,8 @@ class SeamlessDonationCodeLists extends WP_List_Table{
 	
 		$this->current_page = $this->get_pagenum();
 	
-		$this->total_items = $SdDb->db->get_var("select count(ID) from $SdDb->meta");
-		$this->per_page = 30;
+		$this->total_items = $SdDb->db->get_var("select count(ID) from $SdDb->code");
+		$this->per_page = 20;
 	
 		$this->set_pagination_args( array(
 				'total_items' => $this->total_items,                  //WE have to calculate the total number of items
@@ -86,6 +86,125 @@ class SeamlessDonationCodeLists extends WP_List_Table{
 		
 	
 	function populate_table_data(){
+		$SdDb = new SeamlessDonationDb();
+		$prepared_data = array();
+		
+		//pagination
+		$current_page = ($this->current_page > 0) ? $this->current_page - 1 : 0;
+		$offset = (int) $current_page * (int) $this->per_page;
+		
+		$args = array(
+			'limit' => $this->per_page,
+			'offset' => $offset,
+		);
+		
+		if(isset($_REQUEST['orderby']) && !empty($_REQUEST['orderby'])){
+			$args['orderby'] = $_REQUEST['orderby'];
+		}
+		
+		if(isset($_REQUEST['order']) && !empty($_REQUEST['order'])){
+			$args['order'] = $_REQUEST['order'];
+		}
+		
+		$codes = $SdDb->get_codes($args);
+		
+		if($codes){
+			foreach($codes as $code){
+				$prepared_data[] = array(
+					'ID' => $code->ID,
+					'code' => $code->code,
+					'min_value' => $code->min_value,
+					'max_value' => $code->max_value,
+					'status' => ($code->status == 1) ? 'Not Used' : 'Already Used',
+					'time' => date('Y-m-d', $code->time)										
+				);
+			}
+		}
+		
+		return $prepared_data;
+	}
+	
+	
+	//primary key column is a must
+	/* checkbox for bulk action*/
+	function column_cb($item) {
+		return sprintf(
+			'<input type="checkbox" name="code_id[]" value="%s" />', $item['ID']
+		);
+	}
+	
+	/* default column checking */
+	function column_default($item, $column_name){
+		
+		//var_dump($item); diee();
+		
+		switch($column_name){
+			case "ID":
+			case "code":
+			case "min_value":
+			case "max_value":
+			case "status":
+			case "time":
+				return $item[$column_name];
+				break;
+			default:
+				var_dump($item);
+					
+		}
+	}
+	
+	
+	//bulk actions initialization
+	function get_bulk_actions() {
+		$actions = array(
+				'delete'    => 'Delete'
+		);
+		return $actions;
+	}
+	
+	
+	//extra 
+	/*adding extra actions when hovering first column  */
+	function column_code($item){
+	
+		$delete_href = sprintf('?page=%s&action=%s&code_id=%s', $_REQUEST['page'],'delete',$item['ID']);
+	
+		if($this->get_pagenum()){
+			$delete_href = add_query_arg(array('paged'=>$this->get_pagenum()), $delete_href);
+		}
+	
+		$actions = array(
+				'edit' => sprintf('<a href="?page=%s&action=%s&code_id=%s">Edit</a>', 'addnew-code','edit',$item['ID']),
+				'delete' => "<a href='$delete_href'>Delete</a>"
+		);
+	
+	
+		return sprintf('%1$s %2$s', $item['code'], $this->row_actions($actions) );
+	}
+
+	
+	/*
+	 * handling bulk actions
+	 * */
+	function handle_bulk_actions(){
+		if($this->current_action() == 'delete'){
+			$SdDb = new SeamlessDonationDb();
+			$code_ids = $_REQUEST['code_id'];
+		
+			if(!is_array($code_ids)){
+				$code_ids = array($code_ids);
+			}
+			
+			foreach($code_ids as $code_id){
+				$SdDb->delete_a_code($code_id);
+			}
+			
+			$message = count($code_ids) . ' deleted';
+			return $message;			
+		}
+		else{
+			return null;
+		}
 		
 	}
 	

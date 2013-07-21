@@ -19,6 +19,9 @@ class SeamlessDonationCodeManipulation{
 	//menu page
 	static function menu_page_seamless_codes(){
 		$CodeList = self::get_list_table();
+		
+		$message = $CodeList->handle_bulk_actions();
+		
 		include SDCODEMANIPLATION_DIR . '/includes/menupage.php';
 	}
 	

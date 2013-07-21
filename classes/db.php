@@ -1,8 +1,8 @@
 <?php
 class SeamlessDonationDb{
 	
-	private $code;
-	private $code_meta;
+	public $code;
+	public $code_meta;
 	public $db;
 	
 	function __construct(){
@@ -160,5 +160,29 @@ class SeamlessDonationDb{
 				}
 			}
 		}
+	}
+	
+	
+	//get codes
+	function get_codes($args){
+		$defaults = array(
+			'limit' => 30,
+			'offset' => 0,
+			'orderby' => 'time',
+			'order' => 'DESC'					
+		);
+		
+		$args = wp_parse_args($args, $defaults);
+		extract($args, EXTR_SKIP);
+		
+		$sql = "select * from $this->code order by $orderby $order limit $limit offset $offset";
+		
+		return $this->db->get_results($sql);
+	}
+	
+	
+	function delete_a_code($code_id){
+		$this->db->query("delete from $this->code where ID = '$code_id'");
+		$this->db->query("delete from $this->code_meta where code_id = '$code_id'");
 	}
 }
