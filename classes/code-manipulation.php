@@ -104,7 +104,9 @@ class SeamlessDonationCodeManipulation{
 		
 		if($code){
 			update_post_meta($post_id, '_donation_code_id', $code->ID);
+			update_post_meta($post_id, '_donation_code', $code->code);
 			$SdDb->change_code_status($code_id, 2);
+			$SdDb->update_code_meta($code->ID, array('post_id' => $post_id));
 		}
 		
 	}
