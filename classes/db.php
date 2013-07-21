@@ -3,7 +3,7 @@ class SeamlessDonationDb{
 	
 	private $code;
 	private $code_meta;
-	private $db;
+	public $db;
 	
 	function __construct(){
 		global $wpdb;

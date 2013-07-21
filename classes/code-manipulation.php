@@ -18,6 +18,7 @@ class SeamlessDonationCodeManipulation{
 	
 	//menu page
 	static function menu_page_seamless_codes(){
+		$CodeList = self::get_list_table();
 		include SDCODEMANIPLATION_DIR . '/includes/menupage.php';
 	}
 	
@@ -29,7 +30,11 @@ class SeamlessDonationCodeManipulation{
 	
 	//get a list table
 	static function get_list_table(){
+		if(!class_exists('SeamlessDonationCodeLists')){
+			include SDCODEMANIPLATION_DIR . '/classes/list-table.php';
+		}
 		
+		return new SeamlessDonationCodeLists();
 	}
 	
 	static function manage_db(){

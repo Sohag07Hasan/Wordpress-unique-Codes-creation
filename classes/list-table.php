@@ -73,7 +73,7 @@ class SeamlessDonationCodeLists extends WP_List_Table{
 	
 		$this->current_page = $this->get_pagenum();
 	
-		$this->total_items = $SdDb->get_var("select count(ID) from $SdDb->meta");
+		$this->total_items = $SdDb->db->get_var("select count(ID) from $SdDb->meta");
 		$this->per_page = 30;
 	
 		$this->set_pagination_args( array(
