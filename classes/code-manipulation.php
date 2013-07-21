@@ -7,6 +7,9 @@ class SeamlessDonationCodeManipulation{
 		
 		//form submission
 		add_action('init', array(get_class(), 'code_generation_form_submission_handler'));
+		
+		//Thank  you email and code assign
+		add_action('dgx-donation_save_post', array(get_class(), 'attach_code_with_donation'), 10, 2);
 	}
 	
 	//manupage
@@ -85,5 +88,24 @@ class SeamlessDonationCodeManipulation{
 	
 		wp_redirect($url);
 		die();
+	}
+	
+	
+	
+	/**
+	 * function to assign code with the donation
+	 * */
+	static function attach_code_with_donation($post_id, $posted){
+		$amount = $posted['AMOUNT'];		
+		$amount = (int) ceil(preg_replace('#[^0-9.]#', '', $amount));
+		
+		$SdDb = new SeamlessDonationDb();
+		$code = $SdDb->get_used_code_by_amount($amount);
+		
+		if($code){
+			update_post_meta($post_id, '_donation_code_id', $code->ID);
+			$SdDb->change_code_status($code_id, 2);
+		}
+		
 	}
 }

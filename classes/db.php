@@ -185,4 +185,22 @@ class SeamlessDonationDb{
 		$this->db->query("delete from $this->code where ID = '$code_id'");
 		$this->db->query("delete from $this->code_meta where code_id = '$code_id'");
 	}
+	
+	
+	/**
+	 * get a code matching the donation amount
+	 * */
+	function get_used_code_by_amount($amount){
+		$sql = "select * from $this->code where min_value <= '$amount' and max_value >= '$amount limit 1";
+		return $this->db->get_row($sql);
+	}
+	
+	
+	/**
+	 * changing the code status
+	 * */
+	function change_code_status($code_id, $status, $post_id){
+		$this->db->update($this->code, array('status' => $status), array('ID' => $code_id), array('%d'), array('%d'));
+		$this->update_code_meta($code_id, array('donation_id' => $post_id));
+	}
 }
