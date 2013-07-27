@@ -12,7 +12,13 @@
 	
 		//var_dump($code);
 		//var_dump($metas);
+		
+		
 	}
+	
+	$specific_code = $SdDb->get_used_code_by_amount(15);
+	
+	var_dump($specific_code);
 	
 ?>
 

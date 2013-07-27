@@ -169,7 +169,7 @@ class SeamlessDonationDb{
 			'limit' => 30,
 			'offset' => 0,
 			'orderby' => 'time',
-			'order' => 'DESC'					
+			'order' => 'DESC'				
 		);
 		
 		$args = wp_parse_args($args, $defaults);
@@ -191,7 +191,7 @@ class SeamlessDonationDb{
 	 * get a code matching the donation amount
 	 * */
 	function get_used_code_by_amount($amount){
-		$sql = "select * from $this->code where min_value <= '$amount' and max_value >= '$amount limit 1";
+		$sql = "select * from $this->code where min_value <= '$amount' and max_value >= '$amount' and status = '1' limit 1";
 		return $this->db->get_row($sql);
 	}
 	
