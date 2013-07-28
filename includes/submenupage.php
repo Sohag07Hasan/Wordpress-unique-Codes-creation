@@ -16,9 +16,9 @@
 		
 	}
 	
-	$specific_code = $SdDb->get_used_code_by_amount(15);
+	//$specific_code = $SdDb->get_used_code_by_amount(15);
 	
-	var_dump($specific_code);
+	//var_dump($specific_code);
 	
 ?>
 
@@ -30,6 +30,10 @@
 			?>
 			<div class="updated"><p> Code Information saved </p></div>
 			<?php 
+		}
+		
+		if($_REQUEST['message'] == 2){
+			echo '<div class="error"><p>This Code is already existed. Please try with another code</p></div>';
 		}
 		
 	?>
@@ -48,7 +52,7 @@
 			<tbody>
 				<tr>
 					<th scope="row"><label for="code_code">Code</label></th>
-					<td><input placeholder="will be generated automatically" readonly id="code_code" size="40" type="text" name="code_code" value="<?php echo $code->code; ?>" /></td>
+					<td><input id="code_code" size="40" type="text" name="code_code" value="<?php echo $code->code; ?>" /></td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="code_min">Minimum value to Donate ( Integer )</label></th>

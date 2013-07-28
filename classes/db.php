@@ -85,7 +85,9 @@ class SeamlessDonationDb{
 		if($posted['code_id'] > 0) return $this->update_code($posed);
 		
 		//functional area
-		$uniqe_code = $this->generate_code();
+		//$uniqe_code = $this->generate_code();
+		$uniqe_code = trim($posted['code_code']);
+				
 		$data = array(
 			'code' => $uniqe_code,
 			'min_value' => $posted['code_min'],
@@ -110,17 +112,22 @@ class SeamlessDonationDb{
 	
 	//update an exising code
 	function update_code($posted){
+		
+		//var_dump($posted); exit;
+		
+		
 		$data = array(
+			'code' => $posted['code_code'],
 			'min_value' => $posted['code_min'],
 			'max_value' => $posted['code_max'],
 			'blog_id' => get_current_blog_id(),
 		);
 		
-		if($this->db->update($this->code, $data, array('ID' => $posted['code_id']), array('%d', '%d', '%d'), array('%d'))){
+		if($this->db->update($this->code, $data, array('ID' => $posted['code_id']), array('%s', '%d', '%d', '%d'), array('%d'))){
 			return $posted['code_id'];
 		}
 		else{
-			return 0;
+			return $posted['code_id'];
 		}
 	}
 	
