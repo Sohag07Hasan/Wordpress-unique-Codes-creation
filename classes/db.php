@@ -209,4 +209,31 @@ class SeamlessDonationDb{
 	function change_code_status($code_id, $status){
 		return $this->db->update($this->code, array('status' => $status), array('ID' => $code_id), array('%d'), array('%d'));
 	}
+	
+	
+	/**
+	 * csv parsing
+	 * */
+	function csv_import_code($posted){
+		if(empty($posted)) return false;
+
+		
+		$data = array(
+			'code_code' => trim($posted['code']),
+			'code_min' => trim($posted['min_value']),
+			'code_max' => trim($posted['max_value'])					
+		);
+		
+		
+		
+		$code_id = $this->create_code($data);
+		if($code_id){
+			$this->update_code_meta($code_id, array('message' => trim($posted['message'])));
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
 }
