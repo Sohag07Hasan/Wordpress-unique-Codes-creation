@@ -14,8 +14,11 @@ class SeamlessDonationCodeManipulation{
 	
 	//manupage
 	static function admin_menu(){
-		add_menu_page('seamless donation codes', 'Donation Codes', 'manage_options', 'donation_code', array(get_class(), 'menu_page_seamless_codes'));
-		add_submenu_page('donation_code', ucwords('new or edit a code'), 'Add New', 'manage_options', 'addnew-code', array(get_class(), 'submenu_add_code'));
+		if(is_multisite() && get_current_blog_id() == 1) {
+			add_menu_page('seamless donation codes', 'Donation Codes', 'manage_options', 'donation_code', array(get_class(), 'menu_page_seamless_codes'));
+			add_submenu_page('donation_code', ucwords('new or edit a code'), 'Add New', 'manage_options', 'addnew-code', array(get_class(), 'submenu_add_code'));
+			add_submenu_page('donation_code', ucwords('import csv'), 'Import', 'manage_options', 'import-code', array(get_class(), 'submenu_import'));
+		}
 	}
 	
 	
@@ -103,11 +106,35 @@ class SeamlessDonationCodeManipulation{
 		$code = $SdDb->get_used_code_by_amount($amount);
 		
 		if($code){
+			
+			$metas = $SdDb->get_key_metas($code->ID);
+			update_post_meta($post_id, '_donation_message', $metas['message']);
 			update_post_meta($post_id, '_donation_code_id', $code->ID);
 			update_post_meta($post_id, '_donation_code', $code->code);
+			
 			$SdDb->change_code_status($code->ID, 2);
 			$SdDb->update_code_meta($code->ID, array('post_id' => $post_id));
 		}
 		
+	}
+	
+	
+	/**
+	 * csv import
+	 * */
+	static function submenu_import(){
+		include SDCODEMANIPLATION_DIR . '/includes/submenupage-csvimport.php';
+	}
+	
+	
+	/**
+	 * get csv class
+	 * */
+	static function get_csv_parser(){
+		if(!class_exists('parseCSV')){
+			include SDCODEMANIPLATION_DIR . '/classes/parsecsv.lib.php';
+		}
+		
+		return new parseCSV();
 	}
 }

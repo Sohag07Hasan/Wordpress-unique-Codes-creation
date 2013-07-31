@@ -6,7 +6,7 @@
 ?>
 
 <div class="wrap">
-	<h2>Codes for Seamless Donation</h2>
+	<h2>Codes for Donation</h2>
 	
 	<?php 
 		if($message) echo '<div class="updated"><p>' . $message . '</p></div>';

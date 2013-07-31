@@ -110,24 +110,29 @@ class SeamlessDonationCodeLists extends WP_List_Table{
 		
 		if($codes){
 			foreach($codes as $code){
-
+				
+				/*
 				$donation_detail = '';
 				
 				if(function_exists('dgx_donate_get_donation_detail_link')){				
 					$meta = $SdDb->get_key_metas($code->ID);
+					
+					//var_dump($meta);
+					
 					$donation_id = $meta['post_id'];					
 					$donation_detail_link = dgx_donate_get_donation_detail_link($donation_id);
 					if($donation_detail_link){
 						$donation_detail = " <a href='$donation_detail_link'>View</a>";
 					}
 				}
+				*/
 				 
 				$prepared_data[] = array(
 					'ID' => $code->ID,
 					'code' => $code->code,
 					'min_value' => $code->min_value,
 					'max_value' => $code->max_value,
-					'status' => ($code->status == 1) ? 'Not Used' : 'Already Used' . $donation_detail,
+					'status' => ($code->status == 1) ? 'Not Used' : 'Already Used',
 					'time' => date('Y-m-d', $code->time)										
 				);
 			}
